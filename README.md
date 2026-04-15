@@ -1,10 +1,29 @@
-# 🐳 Docker Multi-Website Deployment (Nginx + MySQL)
-Triển khai hệ thống gồm **2 website riêng biệt (web1, web2)** sử dụng:
-* Docker & Docker Compose
-* Nginx Reverse Proxy
-* MySQL Database
+# 🐳 Docker Multi-Website System (Nginx + MySQL + DNS)
+
+## 📌 Overview
+
+This project demonstrates deploying multiple web applications on a single server using Docker and Docker Compose, with Nginx as a reverse proxy and DNS-based routing.
+
 ---
-## 📂 Cấu trúc project
+
+## 🧱 Architecture
+
+Client → Nginx (Reverse Proxy) → Web1 / Web2 → MySQL
+
+---
+
+## ⚙️ Key Features
+
+* Multi-website deployment (web1, web2)
+* Nginx reverse proxy for traffic routing
+* Internal DNS resolution using dnsmasq
+* Shared MySQL database across services
+* Containerized system using Docker Compose
+
+---
+
+## 📂 Project Structure
+
 ```
 Mystore/
 │── docker-compose.yml
@@ -17,105 +36,128 @@ Mystore/
 │   ├── Dockerfile
 │   └── source code
 │── db/
-│   ├── 01-computer_store.sql
-│   ├── 02-hkt-schema.sql
-│   └── 03-hkt-data.sql
-|── dnsmqsq.conf
+│   ├── SQL files
+│── dnsmasq.conf
+```
+
 ---
-## ⚙️ Yêu cầu hệ thống
-* Ubuntu (VMware hoặc máy thật)
+
+## ⚙️ Requirements
+
+* Ubuntu (VM or physical machine)
 * Docker
 * Docker Compose
+
 ---
-## 🚀 Cài đặt và chạy
+
+## 🚀 Deployment
+
 ### 1. Clone project
+
 ```bash
 git clone git@github.com:Cndinh3124/Mystore.git
 cd Mystore
 ```
----
-### 2. Fix DNS (Ubuntu)
+
+### 2. Configure DNS (Ubuntu)
+
 ```bash
 sudo systemctl stop systemd-resolved
 sudo systemctl disable systemd-resolved
 sudo rm /etc/resolv.conf
 echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
 ```
----
-### 3. Chạy hệ thống
+
+### 3. Run system
+
 ```bash
 docker-compose up -d --build
 ```
----
-### 4. Kiểm tra container
+
+### 4. Verify containers
 
 ```bash
 docker ps
 ```
----
-### 5. Kiểm tra DNS
+
+### 5. Test DNS
+
 ```bash
 nslookup web1.ncdinh 127.0.0.1
 ```
+
 ---
-## 🌐 Cấu hình máy client
-### Trên Ubuntu
-Mở file:
-```bash
-sudo nano /etc/hosts
-```
-Thêm:
+
+## 🌐 Client Configuration
+
+Edit `/etc/hosts`:
+
 ```
 127.0.0.1 web1.ncdinh
 127.0.0.1 web2.ncdinh
 ```
+
 ---
-## 🔗 Truy cập website
+
+## 🔗 Access
+
 * http://web1.ncdinh
 * http://web2.ncdinh
+
 ---
-## 🧠 Nguyên lý hoạt động
-```
-Client → Nginx → Web1 / Web2 → MySQL
-```
-* Nginx đóng vai trò reverse proxy
-* Domain sẽ được phân luồng:
-  * web1.local → web1 container
-  * web2.local → web2 container
-* Cả 2 web dùng chung MySQL
+
+## 🧠 System Flow
+
+* Nginx acts as a reverse proxy
+* Domain-based routing:
+
+  * web1 → web1 container
+  * web2 → web2 container
+* Both applications connect to a shared MySQL database
+
 ---
-## 🐛 Lỗi thường gặp
-### ❌ Không kết nối được MySQL
-**Nguyên nhân:**
-* Sai hostname
-**Fix:**
+
+## 🐞 Troubleshooting
+
+### ❌ Cannot connect to MySQL
+
+* Check hostname:
+
 ```php
 $host = "mysql";
 ```
+
+### ❌ Domain not accessible
+
+* Check `/etc/hosts` configuration
+
+### ❌ CSS not loading
+
+* Check volume mount and file paths
+
 ---
-### ❌ Lỗi domain không truy cập được
-**Nguyên nhân:**
-* Chưa cấu hình file hosts
+
+## 🛠 Tech Stack
+
+* Docker
+* Docker Compose
+* Nginx (Reverse Proxy)
+* MySQL
+* dnsmasq
+
 ---
-### ❌ CSS lỗi
-**Nguyên nhân:**
-* Sai đường dẫn hoặc volume mount lỗi
+
+## 🎯 Key Learning
+
+* Multi-container system design
+* Reverse proxy architecture
+* DNS-based service routing
+* Container networking and orchestration
+
 ---
-## 📌 Ghi chú
-* Tên service Docker = hostname kết nối DB
-* Luôn chạy lại khi thay đổi:
-```bash
-docker-compose down --remove-orphans
-docker-compose up -d --build
-```
----
-## 👨‍💻 Tác giả
-* Name: Cong Dinh Nguyen
-* Project: Docker Multi Web Deployment
----
-## Kết luận
-Dự án giúp:
-* Hiểu cách deploy nhiều website trên Docker
-* Làm việc với Nginx reverse proxy
-* Quản lý container và network
+
+## 👨‍💻 Author
+
+Cong Dinh Nguyen
+
 ---
